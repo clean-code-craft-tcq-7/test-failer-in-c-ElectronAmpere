@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "./src/tshirts.h"
+#include "./tshirts.h"
 char size(int cms) {
     char sizeName = '\0';
     if (cms < 38) {

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "./misaligned.h"
 
 int printColorMap() {
     const char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
