@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <assert.h>
 
+#include "./src/tshirts.h"
 char size(int cms) {
     char sizeName = '\0';
     if (cms < 38) {
@@ -12,13 +12,3 @@ char size(int cms) {
     }
     return sizeName;
 }
-
-int testTshirtSize() {
-    printf("\nTshirt size test\n");
-    assert(size(37) == 'S');
-    assert(size(40) == 'M');
-    assert(size(43) == 'L');
-    printf("All is well (maybe!)\n");
-    return 0;
-}
-
