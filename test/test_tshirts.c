@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include <assert.h>
+#include "../src/tshirts.h"
 
 int testTshirtSize() {
     printf("\nTshirt size test\n");

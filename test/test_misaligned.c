@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include <assert.h>
-#include "./src/misaligned.h"
+
+#include "../src/misaligned.h"
 
 int testPrintColorMap() {
     printf("\nPrint color map test\n");

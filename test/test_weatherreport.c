@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "./src/weatherreport.h"
+
+#include "../src/weatherreport.h"
 
 // This is a stub for a weather sensor. For the sake of testing 
 // we create a stub that generates weather data and allows us to
