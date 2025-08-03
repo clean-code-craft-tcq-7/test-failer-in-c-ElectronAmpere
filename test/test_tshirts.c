@@ -4,9 +4,8 @@
 #include "../src/tshirts.h"
 
 #define SHIRTS_RANGE_SWEEP(start, stop, checker) \
-    for (int sweep = start; sweep <= stop; sweep++) \
-    {\
-        assert(size(sweep) == checker);\
+    for (int sweep = start; sweep <= stop; sweep++) { \
+        assert(size(sweep) == checker); \
     }
 
 void testTshirtSizeSmall() {
