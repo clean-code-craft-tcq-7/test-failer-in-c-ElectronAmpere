@@ -14,7 +14,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 enable_testing()
 
-file(GLOB SOURCES "src/*.c" "test/*.cpp")
+file(GLOB SOURCES "src/*.c" "test/*.c" "test/*.cpp")
 add_executable(strong_tests ${SOURCES})
 
 target_link_libraries(
