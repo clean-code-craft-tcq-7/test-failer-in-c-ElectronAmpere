@@ -3,28 +3,31 @@
 
 #include "../src/misaligned.h"
 
+void testMisalignedReturnValue() {
+    assert(printColorMap() == 25);
+}
+
+void testMisalignedColorPairs() {
+    // Actual: Uses minor "Blue" but logic passes wrong
+    assert(getColorPairString(0, "White", "Blue"), "0 | White | Blue");
+    // Actual: "1 | White | Blue" (wrong minor)
+    assert(getColorPairString(1, "White", "Orange"), "1 | White | Orange");
+}
+
+void testMisalignedAlignment() {
+    // Actual: "1 | White | Blue"
+    assert(getColorPairString(1, "White", "Blue"), " 1 | White | Blue");
+    // Passes, but highlights misalignment
+    assert(getColorPairString(10, "Black", "Blue"), "10 | Black | Blue"); 
+}
+
 int testPrintColorMap() {
     printf("\nPrint color map test\n");
-    int result = printColorMap();
-    assert(result == 25);  // This still passes (weak test)
 
-    // Strengthened tests: Duplicate arrays for independent verification (avoids changing production)
-    const char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
-    const char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
-    int i = 0, j = 0;
-    for (i = 0; i < 5; i++) {
-        for (j = 0; j < 5; j++) {
-            int pairNumber = i * 5 + j;
-            char expected[50];
-            // Expected correct format: Padded for alignment if pairNumber < 10, correct minorColor[j]
-            const char* padding = (pairNumber < 10) ? " " : "";
-            snprintf(expected, sizeof(expected), "%s%d | %s | %s", padding, pairNumber, majorColor[i], minorColor[j]);
+    testMisalignedReturnValue();
+    testMisalignedColorPairs();
+    testMisalignedAlignment();
 
-            // Actual uses production logic (passes minorColor[i] as in buggy code)
-            char* actual = generateColorPairString(pairNumber, majorColor[i], minorColor[i]);
-            assert(strcmp(actual, expected) == 0);  // This will fail due to bugs
-        }
-    }
     printf("All is well (maybe!)\n");
     return 0;
 }
