@@ -1,11 +1,11 @@
-#include <stdio.h>
-#include <assert.h>
-#include <limits.h>
+#include <iostream>
+#include <limits>
 #include "../src/tshirts.h"
+#include "gtest/gtest.h"
 
 #define SHIRTS_RANGE_SWEEP(start, stop, checker) \
     for (int sweep = start; sweep <= stop; sweep++) { \
-        assert(size(sweep) == checker); \
+        EXPECT_EQ(size(sweep), checker); \
     }
 
 void testTshirtSizeSmall() {
@@ -21,11 +21,11 @@ void testTshirtSizeLarge() {
 }
 
 int testTshirtSize() {
-    printf("\nTshirt size test\n");
+    std::cout <<"\nTshirt size test\n";
     testTshirtSizeSmall();
     testTshirtSizeMedium();
     testTshirtSizeLarge();
-    printf("All is well (maybe!)\n");
+    std::cout <<"All is well (maybe!)\n";
     return 0;
 }
 

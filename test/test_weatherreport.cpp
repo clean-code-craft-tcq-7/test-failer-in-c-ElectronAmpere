@@ -1,7 +1,6 @@
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <iostream>
+#include <string>
+#include "gtest/gtest.h"
 
 #include "../src/weatherreport.h"
 
@@ -21,8 +20,8 @@ struct SensorReadings sensorStub() {
 
 void testRainy() {
     char* weather = report(sensorStub);
-    printf("%s\n", weather);
-    assert(weather && strstr(weather, "rain") != NULL);
+    std::cout <<"%s\n"<< weather;
+    ASSERT_TRUE(weather && strstr(weather, "rain") != NULL);
     free(weather);
 }
 
@@ -32,14 +31,14 @@ void testHighPrecipitation() {
     char* weather = report(sensorStub);
     // strengthen the assert to expose the bug
     // (function returns Sunny day, it should predict rain)
-    assert(weather && strlen(weather) > 0);
+    ASSERT_TRUE(weather && strlen(weather) > 0);
     free(weather);
 }
 
 int testWeatherReport() {
-    printf("\nWeather report test\n");
+    std::cout <<"\nWeather report test\n";
     testRainy();
     testHighPrecipitation();
-    printf("All is well (maybe!)\n");
+    std::cout <<"All is well (maybe!)\n";
     return 0;
 }
