@@ -3,32 +3,57 @@
 #include "gtest/gtest.h"
 #include "../src/misaligned.h"
 
-void testMisalignedReturnValue() {
-    struct ColorPairString expectedPair = {0};
-    expectedPair = printColorMap();
-    EXPECT_EQ(expectedPair.pairNumber, 25);
+void testGetMajorColor() {
+    EXPECT_STREQ(getMajorColor(0), "White");
+    EXPECT_STREQ(getMajorColor(1), "Red");
+    EXPECT_STREQ(getMajorColor(2), "Black");
+    EXPECT_STREQ(getMajorColor(3), "Yellow");
+    EXPECT_STREQ(getMajorColor(4), "Violet");
+    EXPECT_STREQ(getMajorColor(5), "Invalid");
 }
 
-void testMisalignedColorPairs() {
-    // Actual: Uses minor "Blue" but logic passes wrong
-    EXPECT_EQ(generateColorPairString(0, "White", "Blue"), "0 | White | Blue");
-    // Actual: "1 | White | Blue" (wrong minor)
-    EXPECT_EQ(generateColorPairString(1, "White", "Orange"), "1 | White | Orange");
+void testGetMinorColor() {
+    EXPECT_STREQ(getMinorColor(0), "Blue");
+    EXPECT_STREQ(getMinorColor(1), "Orange");
+    EXPECT_STREQ(getMinorColor(2), "Green");
+    EXPECT_STREQ(getMinorColor(3), "Brown");
+    EXPECT_STREQ(getMinorColor(4), "Slate");
+    EXPECT_STREQ(getMinorColor(5), "Invalid");
 }
 
-void testMisalignedAlignment() {
-    // Actual: "1 | White | Blue"
-    EXPECT_EQ(generateColorPairString(1, "White", "Blue"), " 1 | White | Blue");
-    // Passes, but highlights misalignment
-    EXPECT_EQ(generateColorPairString(10, "Black", "Blue"), "10 | Black | Blue"); 
+void testGetPairNumber() {
+    int expectedPairNumber = 0;
+    for (int majorIndex = 0; majorIndex < 5; majorIndex++) {
+        for (int minorIndex = 0; minorIndex < 5; minorIndex++) {
+            expectedPairNumber = 1 + (majorIndex * 5) + minorIndex; 
+            EXPECT_EQ(getPairNumber(majorIndex, minorIndex), expectedPairNumber);
+        }
+    }
 }
 
-int testPrintColorMap() {
+void testMapColorPair() {
+    char buffer[50];
+    
+    mapColorPair(buffer, sizeof(buffer), 1, "White", "Blue");
+    EXPECT_STREQ(buffer, " 1 | White | Blue");
+
+    mapColorPair(buffer, sizeof(buffer), 10, "Red", "Slate");
+    EXPECT_STREQ(buffer, "10 | Red | Slate");
+
+}
+
+void testPrintColorMap() {
+    EXPECT_EQ(printColorMap(), 25);
+}
+
+int testMisaligned() {
     std::cout <<"\nPrint color map test\n";
-
-    testMisalignedReturnValue();
-    testMisalignedColorPairs();
-    testMisalignedAlignment();
+    
+    testGetMajorColor();
+    testGetMinorColor();
+    testGetPairNumber();
+    testMapColorPair();
+    testPrintColorMap();
 
     std::cout <<"All is well (maybe!)\n";
     return 0;

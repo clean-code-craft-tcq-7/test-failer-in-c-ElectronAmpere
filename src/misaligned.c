@@ -1,27 +1,54 @@
 #include <stdio.h>
 #include "./misaligned.h"
 
-char* generateColorPairString(int pairNumber, const char* majorColor, const char* minorColor) {
-    // Static buffer to avoid memory management
-    static char result[50];
-    // No padding added to check for alignment
-    snprintf(result, sizeof(result), "%d | %s | %s", pairNumber, majorColor, minorColor);
-    return result;
+static const char* majorColors[] = {
+        "White", "Red", "Black", "Yellow", "Violet"
+    };
+static const char* minorColors[] = {
+        "Blue", "Orange", "Green", "Brown", "Slate"
+    };
+
+const char* getMajorColor(int index) {
+    if (index < MAJOR_INDEX_MIN
+     || index >= MAJOR_INDEX_MAX) {
+        return "Invalid";
+    }
+    return majorColors[index];
 }
 
-struct ColorPairString printColorMap() {
-    char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
-    char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
-    struct ColorPairString colorMap = {0};
+const char* getMinorColor(int index) {
+    if (index < MINOR_INDEX_MIN
+     || index >= MINOR_INDEX_MAX) {
+        return "Invalid";
+    }
+    return minorColors[index];
+}
 
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            colorMap.pairNumber = i * 5 +j;
-            snprintf(colorMap.pairColor, sizeof(colorMap.pairColor), "%d | %s | %s", colorMap.pairNumber, majorColor[i], minorColor[i]);
-            printf("%s", colorMap.pairColor);
+int getPairNumber(int majorIndex, int minorIndex) {
+    return ((majorIndex * COLOR_INDEX_OFFSET) 
+            + minorIndex + COLOR_INDEX_DEFAULT);
+}
+
+void mapColorPair(char* buffer, size_t bufferSize, int pairNumber, 
+                  const char* majorColor, const char* minorColor) {
+    snprintf(buffer, bufferSize, "%d | %s | %s", 
+             pairNumber, majorColor, minorColor);
+}
+
+int printColorMap() {
+    int majorIndex = 0;
+    int minorIndex = 0;
+    char buffer[50];
+
+    for (majorIndex = 0; majorIndex < MAJOR_INDEX_MAX; majorIndex++) {
+        for (minorIndex = 0; minorIndex < MINOR_INDEX_MAX; minorIndex++) {
+            mapColorPair(buffer, sizeof(buffer), 
+                         getPairNumber(majorIndex, minorIndex),
+                         getMajorColor(majorIndex),
+                         getMinorColor(minorIndex));
+            printf("%s\n", buffer);
         }
     }
-
-    return colorMap;
+    return majorIndex * minorIndex;
 }
 

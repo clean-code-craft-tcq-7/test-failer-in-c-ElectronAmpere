@@ -2,7 +2,7 @@
 
 // Moved to C++
 int testTshirtSize();
-int testPrintColorMap();
+int testMisaligned();
 void testRainy();
 void testHighPrecipitation();
 int testWeatherReport();
@@ -12,7 +12,7 @@ TEST(TShirt, Size) {
 }
 
 TEST(ColorMap, Print) {
-    testPrintColorMap();
+    testMisaligned();
 }
 
 TEST(WeatherReport, Report) {

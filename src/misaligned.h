@@ -7,14 +7,20 @@
 extern "C" {
 #endif /* __cplusplus */
 
-struct ColorPairString {
-    int pairNumber;
-    char pairColor[COLOR_MAP_LENGTH_MAX];
-};
+#define MAJOR_INDEX_MIN (0)
+#define MAJOR_INDEX_MAX (5)
+#define MINOR_INDEX_MIN (0)
+#define MINOR_INDEX_MAX (5)
 
+#define COLOR_INDEX_OFFSET (5)
+#define COLOR_INDEX_DEFAULT (1)
 
-struct ColorPairString printColorMap();
-char* generateColorPairString(int pairNumber, const char* majorColor, const char* minorColor);
+const char* getMajorColor(int index);
+const char* getMinorColor(int index);
+int getPairNumber(int majorIndex, int minorIndex);
+void mapColorPair(char* buffer, size_t bufferSize, int pairNumber, 
+                  const char* majorColor, const char* minorColor);
+int printColorMap();
 
 #ifdef __cplusplus
 }
