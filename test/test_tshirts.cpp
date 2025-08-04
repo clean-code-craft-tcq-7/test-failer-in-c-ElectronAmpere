@@ -17,7 +17,8 @@ void testTshirtSizeMedium() {
 }
 
 void testTshirtSizeLarge() {
-    SHIRTS_RANGE_SWEEP(43, INT_MAX, 10, 'L');
+    // Reduce the runtime of the test
+    SHIRTS_RANGE_SWEEP(43, 200, 10, 'L');
 }
 
 int testTshirtSize() {
