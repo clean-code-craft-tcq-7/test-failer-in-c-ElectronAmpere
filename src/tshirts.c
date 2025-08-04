@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "./tshirts.h"
-char size(int cms) {
+char tShirtSize(int cms) {
     char sizeName = '\0';
     if (cms < 38) {
         sizeName = 'S';

@@ -4,41 +4,77 @@
 
 #include "../src/weatherreport.h"
 
+//! Note: humidity not used in code
+
 // This is a stub for a weather sensor. For the sake of testing 
 // we create a stub that generates weather data and allows us to
 // test the other parts of this application in isolation
 // without needing the actual Sensor during development
-
-struct SensorReadings sensorStub() {
-    struct SensorReadings readings;
-    readings.temperatureInC = 50;
-    readings.precipitation = 70;
-    readings.humidity = 26;
-    readings.windSpeedKMPH = 52;
+struct SensorReadings safeSensorStub() {
+    struct SensorReadings readings = {
+        .temperatureInC = 20,
+        .precipitation = 0,
+        .humidity = 26, //! Not used in code
+        .windSpeedKMPH = 0,
+    };
     return readings;
 }
 
-void testRainy() {
-    char* weather = report(sensorStub);
-    std::cout <<"%s\n"<< weather;
-    ASSERT_TRUE(weather && strstr(weather, "rain") != NULL);
-    free(weather);
+struct SensorReadings unsafeSensorStub() {
+    struct SensorReadings readings = {
+        .temperatureInC = 32,
+        .precipitation = 10,
+        .humidity = 26, //! Not used in code
+        .windSpeedKMPH = 40,
+    };
+    return readings;
 }
 
-void testHighPrecipitation() {
-    // This instance of stub needs to be different-
-    // to give high precipitation (>60) and low wind-speed (<50)
-    char* weather = report(sensorStub);
-    // strengthen the assert to expose the bug
-    // (function returns Sunny day, it should predict rain)
-    ASSERT_TRUE(weather && strlen(weather) > 0);
-    free(weather);
+struct SensorReadings randomSensorStub() {
+    struct SensorReadings readings = {
+        .temperatureInC = 50,
+        .precipitation = 70,
+        .humidity = 26, //! Not used in code
+        .windSpeedKMPH = 52,
+    };
+    return readings;
+}
+
+void testSafeSensorStub() {
+    char* result = report(safeSensorStub);
+
+    EXPECT_STREQ(getWeatherString(safeSensorStub()), "Sunny Day");
+    EXPECT_STREQ(result, "Sunny Day");
+    free(result);
+}
+
+void testUnsafeSensorStub() {
+    EXPECT_STREQ(getWeatherString(unsafeSensorStub()), "Hot Day");
+}
+
+void testReport() {
+    char* result = report(safeSensorStub);
+    EXPECT_STREQ(result, "Sunny Day");
+    result = report(unsafeSensorStub);
+    EXPECT_STREQ(result, "Sunny Day");
+    free(result);
+}
+
+void testBoundaryConditions() {
+    struct SensorReadings boundary = {
+        .temperatureInC = 26,
+        .precipitation = 60,
+        .windSpeedKMPH = 40,
+    };
+    EXPECT_STREQ(getWeatherString(boundary), "Rainy Day");
 }
 
 int testWeatherReport() {
     std::cout <<"\nWeather report test\n";
-    testRainy();
-    testHighPrecipitation();
+    testSafeSensorStub();
+    testUnsafeSensorStub();
+    testReport();
+    testBoundaryConditions();
     std::cout <<"All is well (maybe!)\n";
     return 0;
 }

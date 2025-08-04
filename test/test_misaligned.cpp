@@ -3,22 +3,25 @@
 #include "gtest/gtest.h"
 #include "../src/misaligned.h"
 
+#define CHECK_STREQ_MAJOR(index, value) EXPECT_STREQ(getMajorColor(index), value)
+#define CHECK_STREQ_MINOR(index, value) EXPECT_STREQ(getMinorColor(index), value)
+
 void testGetMajorColor() {
-    EXPECT_STREQ(getMajorColor(0), "White");
-    EXPECT_STREQ(getMajorColor(1), "Red");
-    EXPECT_STREQ(getMajorColor(2), "Black");
-    EXPECT_STREQ(getMajorColor(3), "Yellow");
-    EXPECT_STREQ(getMajorColor(4), "Violet");
-    EXPECT_STREQ(getMajorColor(5), "Invalid");
+    CHECK_STREQ_MAJOR(0, "White");
+    CHECK_STREQ_MAJOR(1, "Red");
+    CHECK_STREQ_MAJOR(2, "Black");
+    CHECK_STREQ_MAJOR(3, "Yellow");
+    CHECK_STREQ_MAJOR(4, "Violet");
+    CHECK_STREQ_MAJOR(5, "Invalid");
 }
 
 void testGetMinorColor() {
-    EXPECT_STREQ(getMinorColor(0), "Blue");
-    EXPECT_STREQ(getMinorColor(1), "Orange");
-    EXPECT_STREQ(getMinorColor(2), "Green");
-    EXPECT_STREQ(getMinorColor(3), "Brown");
-    EXPECT_STREQ(getMinorColor(4), "Slate");
-    EXPECT_STREQ(getMinorColor(5), "Invalid");
+    CHECK_STREQ_MINOR(0, "Blue");
+    CHECK_STREQ_MINOR(1, "Orange");
+    CHECK_STREQ_MINOR(2, "Green");
+    CHECK_STREQ_MINOR(3, "Brown");
+    CHECK_STREQ_MINOR(4, "Slate");
+    CHECK_STREQ_MINOR(5, "Invalid");
 }
 
 void testGetPairNumber() {

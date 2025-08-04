@@ -5,7 +5,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-char size(int cms);
+char tShirtSize(int cms);
 
 
 #ifdef __cplusplus

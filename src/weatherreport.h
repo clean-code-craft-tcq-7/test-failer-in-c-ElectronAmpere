@@ -12,7 +12,7 @@ struct SensorReadings {
     int windSpeedKMPH;
 };
 
-char size(int cms);
+const char* getWeatherString(struct SensorReadings readings);
 char* report(struct SensorReadings (*sensorReader)());
 
 #ifdef __cplusplus

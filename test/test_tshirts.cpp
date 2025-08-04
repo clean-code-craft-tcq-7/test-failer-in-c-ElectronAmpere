@@ -5,7 +5,7 @@
 
 #define SHIRTS_RANGE_SWEEP(start, stop, stride, checker) \
     for (int sweep = start; sweep <= stop; sweep += stride) { \
-        EXPECT_EQ(size(sweep), checker); \
+        EXPECT_EQ(tShirtSize(sweep), checker); \
     }
 
 void testTshirtSizeSmall() {
