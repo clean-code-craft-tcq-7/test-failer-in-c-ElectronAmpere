@@ -1,5 +1,5 @@
 #include <iostream>
-#include <limits>
+#include <climits>
 #include "../src/tshirts.h"
 #include "gtest/gtest.h"
 
