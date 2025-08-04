@@ -5,7 +5,9 @@
 #include "../src/misaligned.h"
 
 void testMisalignedReturnValue() {
-    assert(printColorMap() == 25);
+    struct ColorPairString expectedPair = {0};
+    expectedPair = printColorMap();
+    assert(expectedPair.pairNumber == 25);
 }
 
 void testMisalignedColorPairs() {

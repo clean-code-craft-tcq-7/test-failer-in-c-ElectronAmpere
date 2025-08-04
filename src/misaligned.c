@@ -9,17 +9,19 @@ char* generateColorPairString(int pairNumber, const char* majorColor, const char
     return result;
 }
 
-int printColorMap() {
+struct ColorPairString printColorMap() {
     char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
     char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
-    
-    int i = 0, j = 0;
-    for (i = 0; i < 5; i++) {
-        for (j = 0; j < 5; j++) {
-            printf("%s\n", 
-                   generateColorPairString(i * 5 + j, majorColor[i], minorColor[i]));
+    struct ColorPairString colorMap = {0};
+
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            colorMap.pairNumber = i * 5 +j;
+            snprintf(colorMap.pairColor, sizeof(colorMap.pairColor), "%d | %s | %s", colorMap.pairNumber, majorColor[i], minorColor[i]);
+            printf("%s", colorMap.pairColor);
         }
     }
-    return i * j;
+
+    return colorMap;
 }
 
