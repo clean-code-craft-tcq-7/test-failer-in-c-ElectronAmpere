@@ -5,30 +5,67 @@
 
 #define CHECK_STREQ_MAJOR(index, value) EXPECT_STREQ(getMajorColor(index), value)
 #define CHECK_STREQ_MINOR(index, value) EXPECT_STREQ(getMinorColor(index), value)
+#define MAX_COLORS (5)
+
+static const char* majorColors[MAX_COLORS] = {
+        "White", "Red", "Black", "Yellow", "Violet"
+    };
+static const char* minorColors[MAX_COLORS] = {
+        "Blue", "Orange", "Green", "Brown", "Slate"
+    };
+
+static const char* expectedColorPair[MAX_COLORS * MAX_COLORS] = {
+    " 1 | White  | Blue",
+    " 2 | White  | Orange",
+    " 3 | White  | Green",
+    " 4 | White  | Brown",
+    " 5 | White  | Slate",
+    " 6 | Red    | Blue",
+    " 7 | Red    | Orange",
+    " 8 | Red    | Green",
+    " 9 | Red    | Brown",
+    "10 | Red    | Slate",
+    "11 | Black  | Blue",
+    "12 | Black  | Orange",
+    "13 | Black  | Green",
+    "14 | Black  | Brown",
+    "15 | Black  | Slate",
+    "16 | Yellow | Blue",
+    "17 | Yellow | Orange",
+    "18 | Yellow | Green",
+    "19 | Yellow | Brown",
+    "20 | Yellow | Slate",
+    "21 | Violet | Blue",
+    "22 | Violet | Orange",
+    "23 | Violet | Green",
+    "24 | Violet | Brown",
+    "25 | Violet | Slate",
+};
 
 void testGetMajorColor() {
-    CHECK_STREQ_MAJOR(0, "White");
-    CHECK_STREQ_MAJOR(1, "Red");
-    CHECK_STREQ_MAJOR(2, "Black");
-    CHECK_STREQ_MAJOR(3, "Yellow");
-    CHECK_STREQ_MAJOR(4, "Violet");
+    // Iteration of valid set
+    for (int index = 0; index < MAX_COLORS; index++){
+        CHECK_STREQ_MAJOR(0, majorColors[index]);
+    }
+    // Invalid set
     CHECK_STREQ_MAJOR(5, "Invalid");
 }
 
 void testGetMinorColor() {
-    CHECK_STREQ_MINOR(0, "Blue");
-    CHECK_STREQ_MINOR(1, "Orange");
-    CHECK_STREQ_MINOR(2, "Green");
-    CHECK_STREQ_MINOR(3, "Brown");
-    CHECK_STREQ_MINOR(4, "Slate");
+
+    // Iteration of valid set
+    for (int index = 0; index < MAX_COLORS; index++){
+        CHECK_STREQ_MINOR(0, minorColors[index]);
+    }
+    // Invalid set
     CHECK_STREQ_MINOR(5, "Invalid");
 }
 
 void testGetPairNumber() {
     int expectedPairNumber = 0;
-    for (int majorIndex = 0; majorIndex < 5; majorIndex++) {
-        for (int minorIndex = 0; minorIndex < 5; minorIndex++) {
-            expectedPairNumber = 1 + (majorIndex * 5) + minorIndex; 
+    for (int majorIndex = 0; majorIndex < MAX_COLORS; majorIndex++) {
+        for (int minorIndex = 0; minorIndex < MAX_COLORS; minorIndex++) {
+            expectedPairNumber = 1 + (majorIndex * MAX_COLORS) + minorIndex; 
             EXPECT_EQ(getPairNumber(majorIndex, minorIndex), expectedPairNumber);
         }
     }
@@ -36,13 +73,16 @@ void testGetPairNumber() {
 
 void testMapColorPair() {
     char buffer[50];
-    
-    mapColorPair(buffer, sizeof(buffer), 1, "White", "Blue");
-    EXPECT_STREQ(buffer, " 1 | White | Blue");
+    int expectedPairNumber = 0;
 
-    mapColorPair(buffer, sizeof(buffer), 10, "Red", "Slate");
-    EXPECT_STREQ(buffer, "10 | Red | Slate");
-
+    for (int majorIndex = 0; majorIndex < MAX_COLORS; majorIndex++) {
+        for (int minorIndex = 0; minorIndex < MAX_COLORS; minorIndex++) {
+            expectedPairNumber = 1 + (majorIndex * MAX_COLORS) + minorIndex;
+            mapColorPair(buffer, sizeof(buffer), expectedPairNumber, 
+                         majorColors[majorIndex], minorColors[minorIndex]);
+            EXPECT_STREQ(buffer, expectedColorPair[expectedPairNumber - 1]);
+        }
+    }
 }
 
 void testPrintColorMap() {
