@@ -3,9 +3,18 @@
 #include "gtest/gtest.h"
 #include "../src/misaligned.h"
 
+// Defines
+#define MAX_COLORS (5)
+
+// Macros
 #define CHECK_STREQ_MAJOR(index, value) EXPECT_STREQ(getMajorColor(index), value)
 #define CHECK_STREQ_MINOR(index, value) EXPECT_STREQ(getMinorColor(index), value)
-#define MAX_COLORS (5)
+#define PAIR_SWEEPER_START(majorIndex, minorIndex, expectedPairNumber) \
+    for (majorIndex = 0; majorIndex < MAX_COLORS; majorIndex++) { \
+        for (minorIndex = 0; minorIndex < MAX_COLORS; minorIndex++) {\
+            expectedPairNumber = 1 + (majorIndex * MAX_COLORS) + minorIndex;
+#define PAIR_SWEEPER_END() }\
+    }
 
 static const char* majorColors[MAX_COLORS] = {
         "White", "Red", "Black", "Yellow", "Violet"
@@ -63,26 +72,23 @@ void testGetMinorColor() {
 
 void testGetPairNumber() {
     int expectedPairNumber = 0;
-    for (int majorIndex = 0; majorIndex < MAX_COLORS; majorIndex++) {
-        for (int minorIndex = 0; minorIndex < MAX_COLORS; minorIndex++) {
-            expectedPairNumber = 1 + (majorIndex * MAX_COLORS) + minorIndex; 
-            EXPECT_EQ(getPairNumber(majorIndex, minorIndex), expectedPairNumber);
-        }
-    }
+    int majorIndex = 0;
+    int minorIndex = 0;
+    PAIR_SWEEPER_START(majorIndex, minorIndex, expectedPairNumber);
+        EXPECT_EQ(getPairNumber(majorIndex, minorIndex), expectedPairNumber);
+    PAIR_SWEEPER_END();
 }
 
 void testMapColorPair() {
     char buffer[50];
     int expectedPairNumber = 0;
-
-    for (int majorIndex = 0; majorIndex < MAX_COLORS; majorIndex++) {
-        for (int minorIndex = 0; minorIndex < MAX_COLORS; minorIndex++) {
-            expectedPairNumber = 1 + (majorIndex * MAX_COLORS) + minorIndex;
-            mapColorPair(buffer, sizeof(buffer), expectedPairNumber, 
-                         majorColors[majorIndex], minorColors[minorIndex]);
-            EXPECT_STREQ(buffer, expectedColorPair[expectedPairNumber - 1]);
-        }
-    }
+    int majorIndex = 0;
+    int minorIndex = 0;
+    PAIR_SWEEPER_START(majorIndex, minorIndex, expectedPairNumber);
+        mapColorPair(buffer, sizeof(buffer), expectedPairNumber, 
+                     majorColors[majorIndex], minorColors[minorIndex]);
+        EXPECT_STREQ(buffer, expectedColorPair[expectedPairNumber - 1]);
+    PAIR_SWEEPER_END();
 }
 
 void testPrintColorMap() {
