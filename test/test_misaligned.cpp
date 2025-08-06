@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <vector>
 #include "gtest/gtest.h"
 #include "../src/misaligned.h"
 
@@ -23,33 +25,27 @@ static const char* minorColors[MAX_COLORS] = {
         "Blue", "Orange", "Green", "Brown", "Slate"
     };
 
-static const char* expectedColorPair[MAX_COLORS * MAX_COLORS] = {
-    " 1 | White  | Blue",
-    " 2 | White  | Orange",
-    " 3 | White  | Green",
-    " 4 | White  | Brown",
-    " 5 | White  | Slate",
-    " 6 | Red    | Blue",
-    " 7 | Red    | Orange",
-    " 8 | Red    | Green",
-    " 9 | Red    | Brown",
-    "10 | Red    | Slate",
-    "11 | Black  | Blue",
-    "12 | Black  | Orange",
-    "13 | Black  | Green",
-    "14 | Black  | Brown",
-    "15 | Black  | Slate",
-    "16 | Yellow | Blue",
-    "17 | Yellow | Orange",
-    "18 | Yellow | Green",
-    "19 | Yellow | Brown",
-    "20 | Yellow | Slate",
-    "21 | Violet | Blue",
-    "22 | Violet | Orange",
-    "23 | Violet | Green",
-    "24 | Violet | Brown",
-    "25 | Violet | Slate",
-};
+// To load the expected color pairs from a file
+std::vector<std::string> loadExpectedPairs(const std::string& filename) {
+    std::vector<std::string> expectedPairs;
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        ADD_FAILURE() << "Failed to open file: " << filename;
+        return expectedPairs;
+    }
+    std::string line;
+    while (std::getline(file, line)) {
+        // Trim trailing newline
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        expectedPairs.push_back(line);
+    }
+    file.close();
+    if (expectedPairs.size() != MAX_COLORS * MAX_COLORS) {
+        ADD_FAILURE() << "Expected " << MAX_COLORS * MAX_COLORS << " pairs, but loaded " << expectedPairs.size();
+    }
+
+    return expectedPairs;
+}
 
 void testGetMajorColor() {
     // Iteration of valid set
@@ -61,7 +57,6 @@ void testGetMajorColor() {
 }
 
 void testGetMinorColor() {
-
     // Iteration of valid set
     for (int index = 0; index < MAX_COLORS; index++){
         CHECK_STREQ_MINOR(0, minorColors[index]);
@@ -84,10 +79,17 @@ void testMapColorPair() {
     int expectedPairNumber = 0;
     int majorIndex = 0;
     int minorIndex = 0;
+    std::vector<std::string> expectedColorPair = loadExpectedPairs("expected_pairs.txt");
+
+    if(expectedColorPair.empty()) {
+        ADD_FAILURE() << "No expected pairs loaded (file missing or empty?), skip comparison";
+        return;
+    }
+
     PAIR_SWEEPER_START(majorIndex, minorIndex, expectedPairNumber);
         mapColorPair(buffer, sizeof(buffer), expectedPairNumber, 
                      majorColors[majorIndex], minorColors[minorIndex]);
-        EXPECT_STREQ(buffer, expectedColorPair[expectedPairNumber - 1]);
+        EXPECT_STREQ(buffer, expectedColorPair[expectedPairNumber - 1].c_str());
     PAIR_SWEEPER_END();
 }
 
