@@ -14,8 +14,12 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 enable_testing()
 
-file(GLOB SOURCES "*.c" "*.cpp")
-add_executable(strong_tests ${SOURCES})
+
+file(GLOB PROD_SOURCES "src/*.c")
+file(GLOB TEST_SOURCES "test/*.c" "test/*.cpp")
+add_executable(strong_tests ${PROD_SOURCES} ${TEST_SOURCES})
+
+configure_file(${CMAKE_SOURCE_DIR}/test/expected_pairs.txt ${CMAKE_BINARY_DIR}/expected_pairs.txt COPYONLY)
 
 target_link_libraries(
   strong_tests
