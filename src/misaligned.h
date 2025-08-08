@@ -1,7 +1,7 @@
 #ifndef __MISALIGNED_H__
 #define __MISALIGNED_H__
 
-#define COLOR_MAP_LENGTH_MAX (50)
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,12 +14,15 @@ extern "C" {
 
 #define COLOR_INDEX_OFFSET (5)
 #define COLOR_INDEX_DEFAULT (1)
+#define COLOR_MAP_LENGTH_MAX (50)
+#define COLOR_HEADER_LENGTH_MAX (50)
 
-const char* getMajorColor(int index);
-const char* getMinorColor(int index);
+const char *getMajorColor(int index);
+const char *getMinorColor(int index);
 int getPairNumber(int majorIndex, int minorIndex);
-void mapColorPair(char* buffer, size_t bufferSize, int pairNumber, 
-                  const char* majorColor, const char* minorColor);
+void mapColorPair(char *buffer, size_t bufferSize, int pairNumber,
+                  const char *majorColor, const char *minorColor);
+void mapColorHeader(char *buffer, size_t bufferSize);
 int printColorMap();
 
 #ifdef __cplusplus
