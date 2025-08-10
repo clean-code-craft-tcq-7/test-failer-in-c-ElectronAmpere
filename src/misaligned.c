@@ -26,7 +26,7 @@ int getPairNumber(int majorIndex, int minorIndex) {
 
 void mapColorPair(char *buffer, size_t bufferSize, int pairNumber,
                   const char *majorColor, const char *minorColor) {
-  snprintf(buffer, bufferSize, "%8d | %11s | %s", pairNumber, majorColor,
+  snprintf(buffer, bufferSize, "%8d | %11s | %11s", pairNumber, majorColor,
            minorColor);
 }
 

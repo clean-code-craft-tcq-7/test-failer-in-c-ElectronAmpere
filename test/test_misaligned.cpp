@@ -8,6 +8,7 @@
 // Defines
 #define MAX_COLORS (5)
 #define HEADER_COLORS (1)
+#define MAX_COLOR_PAIRS (MAX_COLORS * MAX_COLORS + HEADER_COLORS)
 
 // Macros
 #define CHECK_STREQ_MAJOR(index, value)                                        \
@@ -55,19 +56,21 @@ std::vector<std::string> loadExpectedPairs(const std::string &filename) {
 void testGetMajorColor() {
   // Iteration of valid set
   for (int index = 0; index < MAX_COLORS; index++) {
-    CHECK_STREQ_MAJOR(0, majorColors[index]);
+    CHECK_STREQ_MAJOR(index, majorColors[index]);
   }
   // Invalid set
   CHECK_STREQ_MAJOR(5, "Invalid");
+  CHECK_STREQ_MAJOR(6, "Invalid");
 }
 
 void testGetMinorColor() {
   // Iteration of valid set
   for (int index = 0; index < MAX_COLORS; index++) {
-    CHECK_STREQ_MINOR(0, minorColors[index]);
+    CHECK_STREQ_MINOR(index, minorColors[index]);
   }
   // Invalid set
   CHECK_STREQ_MINOR(5, "Invalid");
+  CHECK_STREQ_MINOR(6, "Invalid");
 }
 
 void testGetPairNumber() {
@@ -92,12 +95,46 @@ void testMapColorPair() {
         << "No expected pairs loaded (file missing or empty?), skip comparison";
     return;
   }
+  if (expectedColorPair.size() < MAX_COLOR_PAIRS) {
+    ADD_FAILURE() << "Insufficient expected pairs from file, skip comparison";
+    return;
+  }
 
   PAIR_SWEEPER_START(majorIndex, minorIndex, MAX_COLORS, expectedPairNumber);
   mapColorPair(buffer, sizeof(buffer), expectedPairNumber,
                majorColors[majorIndex], minorColors[minorIndex]);
   EXPECT_STREQ(buffer, expectedColorPair[expectedPairNumber].c_str());
   PAIR_SWEEPER_END();
+}
+
+void testMapColorPairWithHeader() {
+  // Loading the full output from the file
+  std::vector<std::string> expectedLines =
+      loadExpectedPairs("expected_pairs.txt");
+
+  if (expectedLines.size() < MAX_COLOR_PAIRS) {
+    ADD_FAILURE() << "Insufficient expected pairs from file, skip comparison";
+    return;
+  }
+
+  std::string expectedOutput;
+
+  for (const auto &line : expectedLines) {
+    expectedOutput += line + "\n";
+  }
+
+  // Capture printColorMap output
+  std::stringstream buffer;
+  std::streambuf *oldCoutBuf = std::cout.rdbuf(buffer.rdbuf()); // Redirect cout
+  printColorMap();
+  std::cout.rdbuf(oldCoutBuf); // Restore
+
+  // Compare (trim trailing \n if needed)
+  std::string actualOutput = buffer.str();
+  if (!actualOutput.empty() && actualOutput.back() == '\n')
+    actualOutput.pop_back(); // Optional trim
+
+  EXPECT_EQ(actualOutput, expectedOutput);
 }
 
 void testPrintColorMap() { EXPECT_EQ(printColorMap(), 25); }
@@ -109,6 +146,7 @@ int testMisaligned() {
   testGetMinorColor();
   testGetPairNumber();
   testMapColorPair();
+  testMapColorPairWithHeader();
   testPrintColorMap();
 
   std::cout << "All is well (maybe!)\n";
