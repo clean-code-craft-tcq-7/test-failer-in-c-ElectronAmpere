@@ -7,20 +7,24 @@ static const char *minorColors[] = {"Blue", "Orange", "Green", "Brown",
                                     "Slate"};
 
 const char *getMajorColor(int index) {
-  if (index < MAJOR_INDEX_MIN || index >= MAJOR_INDEX_MAX) {
+  if (index < MAJOR_INDEX_MIN)
+    return "Unknown";
+  if (index >= MAJOR_INDEX_MAX)
     return "Invalid";
-  }
   return majorColors[index];
 }
 
 const char *getMinorColor(int index) {
-  if (index < MINOR_INDEX_MIN || index >= MINOR_INDEX_MAX) {
+  if (index < MINOR_INDEX_MIN)
+    return "Unknown";
+  if (index >= MINOR_INDEX_MAX)
     return "Invalid";
-  }
   return minorColors[index];
 }
 
 int getPairNumber(int majorIndex, int minorIndex) {
+  if (majorIndex < MAJOR_INDEX_MIN || minorIndex < MINOR_INDEX_MIN)
+    return -1; // Invalid
   return ((majorIndex * COLOR_INDEX_OFFSET) + minorIndex + COLOR_INDEX_DEFAULT);
 }
 

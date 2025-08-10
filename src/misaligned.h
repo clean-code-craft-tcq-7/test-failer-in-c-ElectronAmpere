@@ -14,6 +14,7 @@ extern "C" {
 
 #define COLOR_INDEX_OFFSET (5)
 #define COLOR_INDEX_DEFAULT (1)
+#define COLOR_MAP_LENGTH_MIN (10)
 #define COLOR_MAP_LENGTH_MAX (50)
 #define COLOR_HEADER_LENGTH_MAX (50)
 
