@@ -20,6 +20,7 @@ file(GLOB TEST_SOURCES "test/*.cpp")
 add_executable(strong_tests ${PROD_SOURCES} ${TEST_SOURCES})
 
 # Copy expected_pairs.txt to build dir (fix for CI)
+configure_file(${CMAKE_SOURCE_DIR}/test/expected_pairs.txt ${CMAKE_BINARY_DIR}/expected_pairs.txt COPYONLY)
 set(EXPECTED_PAIRS_SRC "${CMAKE_SOURCE_DIR}/test/expected_pairs.txt")
 set(EXPECTED_PAIRS_DST "${CMAKE_BINARY_DIR}/expected_pairs.txt")
 if (EXISTS ${EXPECTED_PAIRS_SRC})
