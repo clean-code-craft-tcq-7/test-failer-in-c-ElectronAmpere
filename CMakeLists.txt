@@ -19,16 +19,8 @@ file(GLOB PROD_SOURCES "src/*.c")
 file(GLOB TEST_SOURCES "test/*.cpp")
 add_executable(strong_tests ${PROD_SOURCES} ${TEST_SOURCES})
 
-# Copy expected_pairs.txt to build dir (fix for CI)
-configure_file(${CMAKE_SOURCE_DIR}/test/expected_pairs.txt ${CMAKE_BINARY_DIR}/expected_pairs.txt COPYONLY)
-set(EXPECTED_PAIRS_SRC "${CMAKE_SOURCE_DIR}/test/expected_pairs.txt")
-set(EXPECTED_PAIRS_DST "${CMAKE_BINARY_DIR}/expected_pairs.txt")
-if (EXISTS ${EXPECTED_PAIRS_SRC})
-  file(COPY ${EXPECTED_PAIRS_SRC} DESTINATION ${CMAKE_BINARY_DIR})
-  message(STATUS "Copied expected_pairs.txt to build directory")
-else()
-  message(WARNING "expected_pairs.txt not found in ${CMAKE_SOURCE_DIR}/test/. Tests may fail. Commit the file to the repo.")
-endif()
+
+target_compile_definitions(strong_tests PRIVATE TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_link_libraries(
   strong_tests
