@@ -10,7 +10,7 @@
 #define MAX_COLORS (5)
 #define HEADER_COLORS (1)
 #define MAX_COLOR_PAIRS (MAX_COLORS * MAX_COLORS + HEADER_COLORS)
-#define TEST_INPUT_FILE ("expected_pairs.txt")
+#define TEST_INPUT_FILE (TEST_SOURCE_DIR "/test/expected_pairs.txt")
 
 // Macros
 #define CHECK_STREQ_MAJOR(index, value)                                        \
