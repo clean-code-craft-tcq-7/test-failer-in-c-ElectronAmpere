@@ -7,7 +7,7 @@ char tShirtSize(int cms) {
     sizeName = 'S';
   } else if (cms <= 42) {
     sizeName = 'M';
-  } else if (cms > 42) {
+  } else {
     sizeName = 'L';
   }
   return sizeName;
