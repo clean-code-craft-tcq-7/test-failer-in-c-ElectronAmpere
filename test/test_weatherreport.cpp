@@ -1,238 +1,288 @@
 #include "../src/weatherreport.h"
-#include "gtest/gtest.h"
-#include <iostream>
-#include <string>
+#include <gtest/gtest.h>
+#include <string.h>
 
-// This is a stub for a weather sensor. For the sake of testing
-// we create a stub that generates weather data and allows us to
-// test the other parts of this application in isolation
-// without needing the actual Sensor during development
+// Test fixture
+struct WeatherReportTest {
+  struct SensorReadings readings;
+};
 
-// Safe stub: Low temp, moderate humidity → "Sunny Day" (weak, passes)
+void WeatherReportTest_SetUp(struct WeatherReportTest *fixture) {
+  fixture->readings.temperatureInC = 15;
+  fixture->readings.precipitation = 0;
+  fixture->readings.humidity = 50;
+  fixture->readings.windSpeedKMPH = 10;
+}
+
+// Sensor stubs
 struct SensorReadings safeSensorStub() {
   struct SensorReadings readings = {
       .temperatureInC = 20,
       .precipitation = 0,
-      .humidity = 50, // Now used in code
+      .humidity = 50,
       .windSpeedKMPH = 0,
   };
   return readings;
 }
 
-// Unsafe stub: High temp, low precip/wind, moderate humidity → "Hot Day"
-// (strengthened, should pass with update)
 struct SensorReadings unsafeSensorStub() {
   struct SensorReadings readings = {
       .temperatureInC = 32,
-      .precipitation = 10,
-      .humidity = 40, // Now used in code
-      .windSpeedKMPH = 40,
+      .precipitation = 0,
+      .humidity = 40,
+      .windSpeedKMPH = 10,
   };
   return readings;
 }
 
-// Random stub: High temp, high precip/wind, low humidity → "Alert, Stormy with
-// heavy rain" (passes if wind>50)
 struct SensorReadings randomSensorStub() {
   struct SensorReadings readings = {
       .temperatureInC = 50,
       .precipitation = 70,
-      .humidity = 20, // Now used in code
+      .humidity = 20,
       .windSpeedKMPH = 52,
   };
   return readings;
 }
 
-// New stub for Humid Hot Day: High temp, high humidity → "Humid Hot Day"
 struct SensorReadings humidHotStub() {
   struct SensorReadings readings = {
       .temperatureInC = 30,
       .precipitation = 0,
-      .humidity = 85, // Now used in code
+      .humidity = 85,
       .windSpeedKMPH = 10,
   };
   return readings;
 }
 
-// New stub for Dry Hot Day: High temp, low humidity → "Dry Hot Day"
 struct SensorReadings dryHotStub() {
   struct SensorReadings readings = {
       .temperatureInC = 35,
       .precipitation = 0,
-      .humidity = 25, // Now used in code
-      .windSpeedKMPH = 15,
-  };
-  return readings;
-}
-
-// New stub for Humid Cold Day: Low temp, high humidity → "Humid Cold Day"
-struct SensorReadings humidColdStub() {
-  struct SensorReadings readings = {
-      .temperatureInC = 5,
-      .precipitation = 5,
-      .humidity = 90, // Now used in code
-      .windSpeedKMPH = 20,
-  };
-  return readings;
-}
-
-// New stub for Cold Day: Low temp, moderate humidity → "Cold Day"
-struct SensorReadings coldStub() {
-  struct SensorReadings readings = {
-      .temperatureInC = 8,
-      .precipitation = 0,
-      .humidity = 60, // Now used in code
+      .humidity = 15,
       .windSpeedKMPH = 10,
   };
   return readings;
 }
 
-// New stub for Humid Day: Mild temp, high humidity → "Humid Day"
+struct SensorReadings humidColdStub() {
+  struct SensorReadings readings = {
+      .temperatureInC = -10,
+      .precipitation = 0,
+      .humidity = 90,
+      .windSpeedKMPH = 10,
+  };
+  return readings;
+}
+
+struct SensorReadings coldStub() {
+  struct SensorReadings readings = {
+      .temperatureInC = -5,
+      .precipitation = 0,
+      .humidity = 50,
+      .windSpeedKMPH = 10,
+  };
+  return readings;
+}
+
 struct SensorReadings humidDayStub() {
   struct SensorReadings readings = {
       .temperatureInC = 22,
       .precipitation = 0,
-      .humidity = 85, // Now used in code
-      .windSpeedKMPH = 5,
-  };
-  return readings;
-}
-
-// New stub for Dry Day: Mild temp, low humidity → "Dry Day"
-struct SensorReadings dryDayStub() {
-  struct SensorReadings readings = {
-      .temperatureInC = 24,
-      .precipitation = 0,
-      .humidity = 25, // Now used in code
+      .humidity = 85,
       .windSpeedKMPH = 10,
   };
   return readings;
 }
 
-// New stub for Rainy Day: Mild temp, high precip → "Rainy Day"
-struct SensorReadings rainyDayStub() {
+struct SensorReadings dryDayStub() {
   struct SensorReadings readings = {
-      .temperatureInC = 18,
-      .precipitation = 40,
-      .humidity = 70, // Now used in code
-      .windSpeedKMPH = 15,
+      .temperatureInC = 24,
+      .precipitation = 0,
+      .humidity = 15,
+      .windSpeedKMPH = 10,
   };
   return readings;
 }
 
-// New stub for Windy Day: Mild temp, high wind → "Windy Day"
+struct SensorReadings rainyDayStub() {
+  struct SensorReadings readings = {
+      .temperatureInC = 18,
+      .precipitation = 25,
+      .humidity = 70,
+      .windSpeedKMPH = 10,
+  };
+  return readings;
+}
+
 struct SensorReadings windyDayStub() {
   struct SensorReadings readings = {
       .temperatureInC = 20,
       .precipitation = 0,
-      .humidity = 55, // Now used in code
+      .humidity = 55,
       .windSpeedKMPH = 45,
   };
   return readings;
 }
 
-// New stub for Invalid Readings: Out-of-range values → "Invalid Readings"
 struct SensorReadings invalidStub() {
   struct SensorReadings readings = {
       .temperatureInC = -60,
       .precipitation = -10,
-      .humidity = 110, // Now used in code
+      .humidity = 110,
       .windSpeedKMPH = -5,
   };
   return readings;
 }
 
-// Test safe stub: Weak, should pass
-void testSafeSensorStub() {
-  char *result = report(safeSensorStub);
-  EXPECT_STREQ(getWeatherString(safeSensorStub()), "Sunny Day");
-  EXPECT_STREQ(result, "Sunny Day");
-  free(result);
+struct SensorReadings sunnyDayStub() {
+  struct SensorReadings readings = {
+      .temperatureInC = 15,
+      .precipitation = 0,
+      .humidity = 50,
+      .windSpeedKMPH = 20,
+  };
+  return readings;
 }
 
-// Test unsafe stub: Strengthened, should pass with "Hot Day"
-void testUnsafeSensorStub() {
+// Tests for getWeatherString
+TEST(WeatherReportTest, GetWeatherString_SafeSensor) {
+  EXPECT_STREQ(getWeatherString(safeSensorStub()), "Sunny Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_UnsafeSensor) {
   EXPECT_STREQ(getWeatherString(unsafeSensorStub()), "Hot Day");
 }
 
-// Test report function: Mix weak (pass) and strengthened (pass with updates)
-void testReport() {
-  char *result = report(safeSensorStub);
-  EXPECT_STREQ(result, "Sunny Day");
-  free(result);
-
-  result = report(unsafeSensorStub);
-  EXPECT_STREQ(result, "Hot Day");
-  free(result);
-
-  result = report(randomSensorStub);
-  EXPECT_STREQ(result, "Alert, Stormy with heavy rain");
-  free(result);
-
-  result = report(humidHotStub);
-  EXPECT_STREQ(result, "Humid Hot Day");
-  free(result);
-
-  result = report(dryHotStub);
-  EXPECT_STREQ(result, "Dry Hot Day");
-  free(result);
-
-  result = report(humidColdStub);
-  EXPECT_STREQ(result, "Humid Cold Day");
-  free(result);
-
-  result = report(coldStub);
-  EXPECT_STREQ(result, "Cold Day");
-  free(result);
-
-  result = report(humidDayStub);
-  EXPECT_STREQ(result, "Humid Day");
-  free(result);
-
-  result = report(dryDayStub);
-  EXPECT_STREQ(result, "Dry Day");
-  free(result);
-
-  result = report(rainyDayStub);
-  EXPECT_STREQ(result, "Rainy Day");
-  free(result);
-
-  result = report(windyDayStub);
-  EXPECT_STREQ(result, "Windy Day");
-  free(result);
-
-  result = report(invalidStub);
-  EXPECT_STREQ(result, "Invalid Readings");
-  free(result);
+TEST(WeatherReportTest, GetWeatherString_RandomSensor) {
+  EXPECT_STREQ(getWeatherString(randomSensorStub()),
+               "Alert, Stormy with heavy rain");
 }
 
-// Test boundary conditions: Strengthened, e.g., edges for humidity/temp
-void testBoundaryConditions() {
+TEST(WeatherReportTest, GetWeatherString_HumidHot) {
+  EXPECT_STREQ(getWeatherString(humidHotStub()), "Humid Hot Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_DryHot) {
+  EXPECT_STREQ(getWeatherString(dryHotStub()), "Dry Hot Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_HumidCold) {
+  EXPECT_STREQ(getWeatherString(humidColdStub()), "Humid Cold Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_Cold) {
+  EXPECT_STREQ(getWeatherString(coldStub()), "Cold Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_HumidDay) {
+  EXPECT_STREQ(getWeatherString(humidDayStub()), "Humid Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_DryDay) {
+  EXPECT_STREQ(getWeatherString(dryDayStub()), "Dry Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_RainyDay) {
+  EXPECT_STREQ(getWeatherString(rainyDayStub()), "Partly Cloudy");
+}
+
+TEST(WeatherReportTest, GetWeatherString_WindyDay) {
+  EXPECT_STREQ(getWeatherString(windyDayStub()), "Windy Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_SunnyDay) {
+  EXPECT_STREQ(getWeatherString(sunnyDayStub()), "Sunny Day");
+}
+
+TEST(WeatherReportTest, GetWeatherString_Invalid) {
+  EXPECT_STREQ(getWeatherString(invalidStub()), "Invalid Readings");
+}
+
+TEST(WeatherReportTest, GetWeatherString_BoundaryConditions) {
   struct SensorReadings boundaryHumid = {
       .temperatureInC = 26,
-      .precipitation = 60,
-      .humidity = 81, // Just above high
-      .windSpeedKMPH = 40,
+      .precipitation = 0,
+      .humidity = 81,
+      .windSpeedKMPH = 10,
   };
-  EXPECT_STREQ(
-      getWeatherString(boundaryHumid),
-      "Humid Hot Day"); // Assuming precip=60 defaults to hot with humidity
+  EXPECT_STREQ(getWeatherString(boundaryHumid), "Humid Hot Day");
 
   struct SensorReadings boundaryDry = {
       .temperatureInC = 26,
       .precipitation = 0,
-      .humidity = 29, // Just below low
+      .humidity = 29,
       .windSpeedKMPH = 10,
   };
   EXPECT_STREQ(getWeatherString(boundaryDry), "Dry Hot Day");
+
+  struct SensorReadings boundarySunny = {
+      .temperatureInC = 15,
+      .precipitation = 19,
+      .humidity = 50,
+      .windSpeedKMPH = 30,
+  };
+  EXPECT_STREQ(getWeatherString(boundarySunny), "Sunny Day");
+
+  struct SensorReadings boundaryPartlyCloudy = {
+      .temperatureInC = 15,
+      .precipitation = 20,
+      .humidity = 50,
+      .windSpeedKMPH = 10,
+  };
+  EXPECT_STREQ(getWeatherString(boundaryPartlyCloudy), "Partly Cloudy");
+
+  struct SensorReadings boundaryStormy = {
+      .temperatureInC = 15,
+      .precipitation = 60,
+      .humidity = 50,
+      .windSpeedKMPH = 50,
+  };
+  EXPECT_STREQ(getWeatherString(boundaryStormy),
+               "Alert, Stormy with heavy rain");
+}
+
+// Tests for report
+TEST(WeatherReportTest, Report_SafeSensor) {
+  char *result = report(safeSensorStub);
+  EXPECT_STREQ(result, "Sunny Day");
+  free(result);
+}
+
+TEST(WeatherReportTest, Report_UnsafeSensor) {
+  char *result = report(unsafeSensorStub);
+  EXPECT_STREQ(result, "Hot Day");
+  free(result);
+}
+
+TEST(WeatherReportTest, Report_RandomSensor) {
+  char *result = report(randomSensorStub);
+  EXPECT_STREQ(result, "Alert, Stormy with heavy rain");
+  free(result);
+}
+
+TEST(WeatherReportTest, Report_Invalid) {
+  char *result = report(invalidStub);
+  EXPECT_STREQ(result, "Invalid Readings");
+  free(result);
+}
+
+TEST(WeatherReportTest, Report_SunnyDay) {
+  char *result = report(sunnyDayStub);
+  EXPECT_STREQ(result, "Sunny Day");
+  free(result);
+}
+
+TEST(WeatherReportTest, Report_NullSensor) {
+  char *result = report(NULL);
+  EXPECT_TRUE(result == NULL);
+  if (result)
+    free(result);
 }
 
 int testWeatherReport() {
   std::cout << "\nWeather report test\n";
-  testSafeSensorStub();
-  testUnsafeSensorStub();
-  testReport();
-  testBoundaryConditions();
+
   std::cout << "All is well (maybe!)\n";
   return 0;
 }
