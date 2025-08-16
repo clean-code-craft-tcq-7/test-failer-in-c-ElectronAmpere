@@ -1,17 +1,18 @@
 #include "gtest/gtest.h"
 
-extern "C" {
-    void testTshirtSize();
-    void testPrintColorMap();
-    void testWeatherReport();
-}
+// Moved to C++
+int testTshirtSize();
+int testMisaligned();
+void testRainy();
+void testHighPrecipitation();
+int testWeatherReport();
 
 TEST(TShirt, Size) {
     testTshirtSize();
 }
 
 TEST(ColorMap, Print) {
-    testPrintColorMap();
+    testMisaligned();
 }
 
 TEST(WeatherReport, Report) {
